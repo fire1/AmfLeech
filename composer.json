@@ -1,0 +1,23 @@
+{
+  "name": "Fire1/AmfLib",
+  "description": "Amf3 library",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Angel Zaprianov",
+      "email": "fire1@abv.bg"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "Fire1\\AmfLeech": "src/"
+    }
+  },
+  "require": {
+    "symfony/class-loader": "3.0.x-dev",
+    "bojaspus/zendamf": "2.0.0rc5",
+    "silexlabs/amfphp": "v2.2.2",
+    "symfony/finder": "3.0.x-dev"
+  }
+}
