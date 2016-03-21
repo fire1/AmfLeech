@@ -1,47 +1,74 @@
 <?php
 /*
-* Copyright (C) 2015 Angel Zaprianov <me@fire1.eu>
+* copyright (c) 2015 angel zaprianov <me@fire1.eu>
 *
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* this program is free software: you can redistribute it and/or modify
+* it under the terms of the gnu general public license as published by
+* the free software foundation, either version 3 of the license, or
 * (at your option) any later version.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
+* this program is distributed in the hope that it will be useful,
+* but without any warranty; without even the implied warranty of
+* merchantability or fitness for a particular purpose.  see the
+* gnu general public license for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-* Project: AmfLib
+* you should have received a copy of the gnu general public license
+* along with this program.  if not, see <http://www.gnu.org/licenses/>.
+* project: amflib
 *
-* Date: 3/12/2016
-* Time: 15:01
+* date: 3/12/2016
+* time: 15:01
 *
-* @author Angel Zaprianov <me@fire1.eu>
+* @author angel zaprianov <me@fire1.eu>
 */
 
 
 include "bootstrap.php";
 
-$parser = new Fire1\AmfLib\Serializer();
+error_reporting(E_ALL);
+
+
+$rd = new \Fire1\AmfLeech\Utils\DumpReader(__DIR__ . '/amf-bin/');
+$op = (new \Fire1\AmfLeech\Utils\DumpPacket($rd))->expandAll();
+
+
+$amf = $op->getArrContainer();
+
+\Fire1\AmfLeech\Curl\SendRequest::$referer = "https://www.klingelmedianet.de/client/ISY3Suite_frontend.swf";
+\Fire1\AmfLeech\Curl\SendRequest::$endpoint = "https://www.klingelmedianet.de/client/messagebroker/amf/";
+
+
+//echo "<pre>";
+///* @var \Fire1\AmfLeech\Utils\AmfContainer $amf */
+//foreach ($container as $index => $amf):
 //
-//$handle_file = fopen(__DIR__ . '/amf-bin/amf.bin', 'rb');
-//$stream_amf3 = stream_get_contents($handle_file);
-//fclose($handle_file);
+//
+//    echo "------------------------------------- {$index} -------------------------------------\n";
+//    print_r((new \Fire1\AmfLeech\Core\AmfDeserialize())->decode($cli->getResponse()));
+//endforeach;
+//exit;
+
+$signature = null;
+//$cli = new \Fire1\AmfLeech\Curl\SendRequest($amf[0]->getEncoded());
+//$response = $cli->getReply()->getDecoded();
+//if (isset($response->messages[0]->data->_externalizedData->DSId)) {
+//    $signature = $response->messages[0]->data->_externalizedData->DSId;
+//}
+//
+//
+//$cli = new \Fire1\AmfLeech\Curl\SendRequest($amf[1]->getEncoded());
+/* @var \Fire1\AmfLeech\Core\AmfPacket $req_1 */
+$req_1 = $amf[1]->getDecoded();
+$req_1->messages[0]
 
 
+echo '<pre>';
+var_dump($amf[1]->getDecoded());
+//$i = $_get['i'];
+//$stream_amf3 = file_get_contents(__dir__ . "/amf-bin/amf{$i}.bin");
 
-$stream_amf3 = file_get_contents(__DIR__ . '/amf-bin/amf3.bin');
 
-//$input = new \ZendAmf\Parser\InputStream($stream_amf3);
-//$decode = new \ZendAmf\Parser\Amf3\Deserializer($input);
+//$result = (new fire1\Amfleech\Core\Amfdeserialize)->decode($rd->readindex(3));
 
 
-$deserializer = new \Amfphp_Core_Amf_Deserializer();
-$deserialized = $deserializer->deserialize(array(),array(),$stream_amf3);
-
-echo "<pre>";
-
-var_dump($deserialized);
+//var_dump($result);

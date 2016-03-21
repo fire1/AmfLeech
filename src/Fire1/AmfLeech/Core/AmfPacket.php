@@ -24,8 +24,47 @@
 
 namespace Fire1\AmfLeech\Core;
 
-
+/**
+ * Class AmfPacket
+ *
+ * @package Fire1\AmfLeech\Core
+ */
 class AmfPacket extends \Amfphp_Core_Amf_Packet
 {
+
+
+    /**
+     * The constructor function for a new Amf object.
+     * All the constructor does is initialize the headers and Messages containers
+     *
+     * @param null $packet
+     */
+    public function __construct($packet = null)
+    {
+        parent::__construct();
+
+        $this->headers = array();
+        $this->messages = array();
+        $this->amfVersion = \Amfphp_Core_Amf_Constants::AMF3_ENCODING;
+
+
+        if ($packet instanceof \Amfphp_Core_Amf_Packet)
+            $this->setFromParent($packet);
+    }
+
+    /**
+     * @param \Amfphp_Core_Amf_Packet $parent
+     *
+     * @return AmfPacket
+     */
+    public function setFromParent(\Amfphp_Core_Amf_Packet $parent)
+    {
+        $this->headers = $parent->headers;
+        $this->messages = $parent->messages;
+        $this->amfVersion = $parent->amfVersion;
+
+        return $this;
+    }
+
 
 }

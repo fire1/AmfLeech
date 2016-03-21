@@ -38,5 +38,6 @@
 # Composer PHAR
 /composer.phar
 
+
 # IDE folder
 .idea/

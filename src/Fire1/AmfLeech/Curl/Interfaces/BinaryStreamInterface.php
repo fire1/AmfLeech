@@ -24,22 +24,14 @@
 
 namespace Fire1\AmfLeech\Curl\Interfaces;
 
+use Fire1\AmfLeech\Core\Interfaces\AmfStreamInterface;
+
 /**
  * Interface BinaryStreamInterface
- *
+ * @deprecated
  * @package Fire1\AmfLeech\Curl\Interfaces
  */
-interface BinaryStreamInterface
+interface BinaryStreamInterface extends AmfStreamInterface
 {
 
-    /**
-     * @return string
-     */
-    public function getStream();
-
-
-    /**
-     * @return int
-     */
-    public function getLength();
 }

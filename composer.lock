@@ -4,44 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b01087bb766f03cf4fee3d84de1655fb",
-    "content-hash": "25654b29aa9e90d33c6fe85156f1b541",
+    "hash": "6c2c50270540450e6118da124fe4a71c",
+    "content-hash": "1099cc1c3124ca0fcdd3acb8709d1805",
     "packages": [
-        {
-            "name": "bojaspus/zendamf",
-            "version": "2.0.0rc5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bojaspus/ZendAmf.git",
-                "reference": "539e637ff8a5cc621f1842e5dfe2f052245f8d67"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bojaspus/ZendAmf/zipball/539e637ff8a5cc621f1842e5dfe2f052245f8d67",
-                "reference": "539e637ff8a5cc621f1842e5dfe2f052245f8d67",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ZendAmf": "library/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "provides support for Adobe's » Action Message Format (AMF), to allow communication between Adobe's » Flash Player and PHP",
-            "homepage": "http://packages.zendframework.com/",
-            "keywords": [
-                "amf",
-                "zf2"
-            ],
-            "time": "2012-08-17 17:36:28"
-        },
         {
             "name": "silexlabs/amfphp",
             "version": "v2.2.2",

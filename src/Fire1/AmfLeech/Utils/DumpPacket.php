@@ -24,16 +24,103 @@
 
 namespace Fire1\AmfLeech\Utils;
 
+use Fire1\AmfLeech\Core\AmfDeserialize;
+use Fire1\AmfLeech\Utils\Interfaces\DumpReadInterface;
+
 /**
  * Class DumpPacket
- *
  * @package Fire1\AmfLeech\Utils
  */
 class DumpPacket
 {
+    /**
+     * @type DumpReadInterface
+     */
+    protected $dumper;
+    /** File array with dumped steps
+     * @type array
+     */
+    protected $steps = array();
+    /**
+     * @type array
+     */
+    protected $_collection = array();
 
-    public function __construct()
+    /**
+     * @param DumpReadInterface $dumper
+     */
+    public function __construct(DumpReadInterface $dumper)
     {
+        $this->dumper = $dumper;
+        $this->steps = $dumper->getList();
+    }
 
+    /**
+     * @return array
+     */
+    public function getAllSteps()
+    {
+        return $this->steps;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStepsLength()
+    {
+        return count($this->steps);
+    }
+
+    /**
+     * @param $index
+     * @return \Fire1\AmfLeech\Core\AmfPacket
+     */
+    public function getData($index)
+    {
+        return new AmfContainer($this->dumper->readIndex($index));
+    }
+
+    /** Gets Amf container from given array index
+     * @param array $list
+     * @return DumpPacket
+     */
+    public function expandArr(array $list = array())
+    {
+        foreach ($list as $index):
+            $this->expandNum($index);
+        endforeach;
+
+        return $this;
+    }
+
+    /** Gets all containers
+     * @return DumpPacket
+     */
+    public function expandAll()
+    {
+        foreach ($this->steps as $step => $fileInfo):
+            $this->expandNum($step);
+        endforeach;
+
+        return $this;
+    }
+
+    /** Trigger read
+     * @param int $index
+     * @return $this
+     */
+    public function expandNum($index = 0)
+    {
+        $this->_collection[ $index ] = $this->getData($index);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArrContainer()
+    {
+        return $this->_collection;
     }
 }

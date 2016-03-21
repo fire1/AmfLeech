@@ -24,16 +24,20 @@
 
 namespace Fire1\AmfLeech\Utils;
 
-
 use Symfony\Component\Finder\Finder;
+use Fire1\AmfLeech\Utils\Exceptions\DumpReadException;
+use Fire1\AmfLeech\Utils\Interfaces\DumpReadInterface;
 
 /**
  * Class DumpReader
- *
  * @package Fire1\AmfLeech\Utils
  */
-class DumpReader
+class DumpReader implements DumpReadInterface
 {
+    /** Binary Stream container
+     * @type string
+     */
+    protected $_container;
     /**
      * @type array
      */
@@ -44,7 +48,6 @@ class DumpReader
     protected $finder;
 
     /** Read AMF dumped files in folder
-     *
      * @param    string $dir_amf      Destination folder with files
      * @param string    $name_pattern Part of file name*
      */
@@ -63,7 +66,6 @@ class DumpReader
     }
 
     /** Returns array file list
-     *
      * @return array
      */
     public function getList()
@@ -73,27 +75,53 @@ class DumpReader
 
         $this->list = array();
         foreach ($this->getFinder() as $value):
-            $this->list = $value;
+            $this->list[] = $value;
         endforeach;
         natsort($this->list);
-        return $this->list;
+
+        return $this->list = array_values($this->list); // Returns array with re-ranged keys
     }
 
     /** Gets AMF dump content from given file index
-     *
      * @param int $index
-     *
      * @return string
+     * @throws DumpReadException
      */
     public function readIndex($index = 0)
     {
         /* @var \SplFileInfo $splFile */
-        $splFile = $this->getList()[$index];
-        return file_get_contents($splFile->getRealPath());
+        $splFile = $this->getList()[ $index ];
+        if (!is_a($splFile, 'SplFileInfo'))
+            throw new DumpReadException("Cannot read index given DumpReader::readIndex({$index}) ");
+
+        return $this->readDump($splFile);
 
     }
 
+    /**
+     * @param \SplFileInfo $fileInfo
+     * @return string
+     */
+    protected function readDump(\SplFileInfo $fileInfo)
+    {
+        return $this->_container = file_get_contents($fileInfo->getRealPath());
+    }
 
+    /** Returns result last index read
+     * @return string
+     */
+    public function getStream()
+    {
+        return $this->_container;
+    }
+
+    /** Returns result last index read
+     * @return int
+     */
+    public function getLength()
+    {
+        return strlen($this->_container);
+    }
 }
 
 

@@ -25,18 +25,18 @@
 
 namespace Fire1\AmfLeech\Curl;
 
+use Fire1\AmfLeech\Core\Interfaces\AmfStreamInterface;
 use Fire1\AmfLeech\Curl\Exceptions\RequestException;
 use Fire1\AmfLeech\Curl\Interfaces\BinaryStreamInterface;
+use Fire1\AmfLeech\Utils\AmfContainer;
 
 /**
  * Class SendRequest
- *
  * @package Fire1\AmfLeech\Curl
  */
 class SendRequest
 {
     /** Default header parameters
-     *
      * @type array
      */
     protected $_header = array(
@@ -51,6 +51,10 @@ class SendRequest
         "Connection: keep",
         "Content-Type: application/x-amf",
     );
+    /**
+     * @type string
+     */
+    private $reply = null;
 
     /**
      * @type null|string
@@ -68,13 +72,11 @@ class SendRequest
     public static $endpoint = null;
 
     /** cURL session
-     *
      * @var
      */
     protected $_curl_handler;
 
     /** AMF binary content
-     *
      * @type BinaryStreamInterface
      */
     protected $_container;
@@ -89,11 +91,11 @@ class SendRequest
     private $domain = null;
 
     /**
-     * @param BinaryStreamInterface $stream   AMF Binary string to send
-     * @param null|string           $endpoint URL address of AMF gateway
-     * @param null|string           $cookie   Cookie if is created
+     * @param AmfStreamInterface $stream   AMF Binary string to send
+     * @param null|string        $endpoint URL address of AMF gateway
+     * @param null|string        $cookie   Cookie if is created
      */
-    function __construct(BinaryStreamInterface $stream, $endpoint = null, $cookie = null)
+    function __construct(AmfStreamInterface $stream, $endpoint = null, $cookie = null)
     {
         $this->_container = $stream;
 
@@ -104,16 +106,14 @@ class SendRequest
     }
 
     /** Remove header element from given index
-     *
      * @param $index
      */
     public function unsetHeaderIndex($index)
     {
-        unset($this->_header[$index]);
+        unset($this->_header[ $index ]);
     }
 
     /** Sets additional header value
-     *
      * @param array|string $value
      */
     public function setHeader($value)
@@ -142,7 +142,6 @@ class SendRequest
     }
 
     /** Gets generated header information
-     *
      * @return array
      */
     public function getHeaderDynamicData()
@@ -157,7 +156,6 @@ class SendRequest
     }
 
     /** Creates new cookie from
-     *
      * @return mixed
      */
     protected function requestCookie()
@@ -167,11 +165,11 @@ class SendRequest
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         preg_match('/^Set-Cookie: (.*?);/m', curl_exec($ch), $arrMatch);
+
         return $arrMatch[1];
     }
 
     /** Returns cookie string from server
-     *
      * @return null|string
      */
     public function getCookie()
@@ -180,7 +178,6 @@ class SendRequest
     }
 
     /** Gets
-     *
      * @return array
      */
     public function getHead()
@@ -190,7 +187,6 @@ class SendRequest
 
     /**
      * POST the CURL and enjoy the outcome :)
-     *
      * @return mixed
      */
     private function __curl()
@@ -198,11 +194,15 @@ class SendRequest
         $this->_curl_handler = curl_init(self::$endpoint);
 
         curl_setopt_array($this->_curl_handler, array(
-            CURLOPT_HTTPHEADER => $this->getHead(),
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $this->_container->getStream(),
+            CURLOPT_HEADER         => false,
+            CURLOPT_POSTFIELDS     => $this->_container->getStream(),
+            CURLOPT_HTTPHEADER     => $this->getHead(),
+            CURLOPT_POST           => true,
+            CURLOPT_BINARYTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_SSL_VERIFYPEER => true,
         ));
 
         $content = curl_exec($this->_curl_handler);
@@ -211,12 +211,75 @@ class SendRequest
         return $content;
     }
 
+    private function __gets()
+    {
+        $opts = array(
+            'http'   => array(
+                'method'  => 'POST',
+                'header'  => $this->getHead(),
+                'content' => $this->_container->getStream(),
+            ), 'ssl' => array(
+                // set some SSL/TLS specific options
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ),
+
+        );
+
+        $context = stream_context_create($opts);
+
+//        $content = file_get_contents(self::$endpoint, false, $context);
+        $fp = fopen(self::$endpoint, 'rb', false, $context);
+        $response = stream_get_contents($fp);
+        echo var_dump($response);
+        exit;
+
+        return $response;
+    }
+
+
+    private function __fopen()
+    {
+        $params = array('http' => array(
+            'method'  => 'POST',
+            'content' => $this->_container->getStream(),
+        ));
+
+        $ctx = stream_context_create($params);
+        $fp = @fopen($sUrl, 'rb', false, $ctx);
+        if (!$fp) {
+            throw new \Exception("Problem with $sUrl, $php_errormsg");
+        }
+
+        $response = @stream_get_contents($fp);
+        if ($response === false) {
+            throw new \Exception("Problem reading data from $sUrl, $php_errormsg");
+        }
+    }
+
     /**
      * @return mixed
      */
     public function getResponse()
     {
-        return $this->__curl();
+        return is_null($this->reply) ? $this->reply = $this->__curl() : $this->reply;
+    }
+
+    /**
+     * @return AmfContainer
+     */
+    public function getReply()
+    {
+        return new AmfContainer($this->getResponse());
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public function exe(callable $callback)
+    {
+        return $callback($this->getResponse());
     }
 
     /**
