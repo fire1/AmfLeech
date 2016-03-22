@@ -15,7 +15,6 @@ use Fire1\AmfLeech\Utils\AmfContainer;
 
 /**
  * Interface AmfContainerInterface
- *
  * @package Fire1\AmfLeech\Utils\Interfaces
  */
 interface AmfContainerInterface
@@ -24,16 +23,15 @@ interface AmfContainerInterface
      * @return AmfContainer
      */
     public function reload();
+
     /**
      * @param AmfStream $data
-     *
      * @return void
      */
     public function setEncoded(AmfStream $data);
 
     /**
      * @param AmfPacket $data
-     *
      * @return void
      */
     public function setDecoded(AmfPacket $data);
@@ -43,9 +41,27 @@ interface AmfContainerInterface
      */
     public function getEncoded();
 
-    /**
+    /** Sets data to AMF object
      * @return mixed
      */
     public function getDecoded();
+
+    /** Refresh message
+     * @return void
+     */
+    public function compile();
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return void
+     */
+    public function __set($name, $value);
+
+    /** Gets data from AMF object
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name);
 
 }

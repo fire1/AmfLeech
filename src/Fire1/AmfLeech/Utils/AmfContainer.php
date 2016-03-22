@@ -14,6 +14,7 @@ use Fire1\AmfLeech\Core\AmfPacket;
 use Fire1\AmfLeech\Core\AmfSerialize;
 use Fire1\AmfLeech\Core\AmfDeserialize;
 use Fire1\AmfLeech\Utils\Interfaces\AmfContainerInterface;
+use Fire1\AmfLeech\Utils\Messaging\Read;
 
 /**
  * Class AmfContainer
@@ -22,6 +23,10 @@ use Fire1\AmfLeech\Utils\Interfaces\AmfContainerInterface;
 class AmfContainer extends AmfStream implements AmfContainerInterface
 {
 
+    /** Container ID
+     * @type string
+     */
+    public static $id;
     /**
      * @type AmfStream
      */
@@ -64,7 +69,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      */
     public function reload()
     {
-        $this->setEncoded($this->getDecoded());
+        self::$id = $this->data()->generateId()->getId();
 
         return $this;
     }
@@ -79,11 +84,30 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
         $this->_raw = $parser->encode($data);
     }
 
+    /** Complied new message
+     * @return $this
+     */
+    /**
+     * @param bool|false $new
+     * @return AmfContainer
+     * @throws \Fire1\AmfLeech\Core\Exceptions\AmfException
+     */
+    public function compile($new = false)
+    {
+        $parser = new AmfSerialize;
+        $this->_raw = $parser->encode($this->_obj);
+        parent::__construct($this->_raw);
+
+        return $this;
+    }
+
     /**
      * @return mixed
      */
     public function getEncoded()
     {
+        $this->compile();
+
         return new AmfStream($this->_raw);
     }
 
@@ -94,5 +118,34 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     {
         return $this->_obj;
     }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function __set($name, $value)
+    {
+        $this->_obj->{$name} = $value;
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->_obj->{$name};
+    }
+
+    /**
+     * @param int $data_position
+     * @param int $message_position
+     * @return Read
+     */
+    public function data($data_position = 0, $message_position = 0)
+    {
+        return new  Read($this->_obj, $message_position, $data_position);
+    }
+
 
 }

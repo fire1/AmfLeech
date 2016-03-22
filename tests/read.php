@@ -49,8 +49,27 @@ $amf = $op->getArrContainer();
 //exit;
 
 $signature = null;
-//$cli = new \Fire1\AmfLeech\Curl\SendRequest($amf[0]->getEncoded());
-//$response = $cli->getReply()->getDecoded();
+
+echo "<pre>";
+
+
+/* @var \Fire1\AmfLeech\Utils\AmfContainer $test */
+$test = $amf[0];
+$test->reload();
+$test->compile();
+
+
+$cli = new \Fire1\AmfLeech\Curl\SendRequest($test->getEncoded());
+
+
+$response = $cli->getReply()->data();
+
+//$reply = new \Fire1\AmfLeech\Utils\Reply($cli->getReply()->getDecoded());
+
+
+var_dump($response);
+
+exit;
 //if (isset($response->messages[0]->data->_externalizedData->DSId)) {
 //    $signature = $response->messages[0]->data->_externalizedData->DSId;
 //}
@@ -59,7 +78,7 @@ $signature = null;
 //$cli = new \Fire1\AmfLeech\Curl\SendRequest($amf[1]->getEncoded());
 /* @var \Fire1\AmfLeech\Core\AmfPacket $req_1 */
 $req_1 = $amf[1]->getDecoded();
-$req_1->messages[0]
+$req_1->messages[0];
 
 
 echo '<pre>';
