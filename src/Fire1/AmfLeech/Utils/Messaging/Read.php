@@ -8,22 +8,18 @@
 
 namespace Fire1\AmfLeech\Utils\Messaging;
 
-
+/**
+ * Class Read
+ * @package Fire1\AmfLeech\Utils\Messaging
+ */
 class Read
 {
-    /**
-     * @type mixed
-     */
-    protected $_container;
 
-    /**
-     * @type \stdClass
+    public static $clintId = null;
+    /** External static configuration
+     * @type bool
      */
-    protected $message;
-    /**
-     * @type array
-     */
-    protected $_dataContainer;
+    public static $change_msg_id = true;
     /**
      * @type \stdClass
      */
@@ -41,17 +37,24 @@ class Read
     public function __construct($messages, $msg_position = 0, $data_position = 0)
     {
 
-        $this->_container = $messages;
-        $this->message = $this->_container->messages[ $msg_position ];
-        $this->_dataContainer = $this->message->data;
-        $this->data = is_array($this->message->data) ? $this->message->data[ $data_position ] : $this->message->data;
+        $message = $messages->messages[ $msg_position ];
+        $this->data = is_array($message->data) ? $message->data[ $data_position ] : $message->data;
 
+        !self::$change_msg_id ?: $this->generateId();
+
+        $this->listenClient();
     }
 
-    public function getMsg()
+    protected function listenClient()
     {
-        return $this->message;
+        $client = $this->getClient();
+        if (is_null(self::$clintId) && !empty($client))
+            self::$clintId = $client;
+
+        if (!is_null(self::$clintId))
+            $this->setClient(self::$clintId);
     }
+
 
     /**
      * @return array|\stdClass
@@ -61,12 +64,36 @@ class Read
         return $this->data;
     }
 
+    /** Gets client ID
+     * @return string
+     */
+    public function getClient()
+    {
+        return $this->data->clientId;
+    }
+
+    /** Sets Client ID
+     * @param $value
+     */
+    public function setClient($value)
+    {
+        $this->data->clientId = $value;
+    }
+
     /**
      * @param $value
      */
-    public function setId($value)
+    public function setMsgId($value)
     {
         $this->data->messageId = $value;
+    }
+
+    /** Gets message ID
+     * @return string
+     */
+    public function getMsgId()
+    {
+        return $this->getData()->messageId;
     }
 
     /**
@@ -93,7 +120,7 @@ class Read
      */
     public function generateId()
     {
-        $this->setId(Flex::generateRandomId());
+        $this->setMsgId(Flex::generateRandomId());
 
         return $this;
     }

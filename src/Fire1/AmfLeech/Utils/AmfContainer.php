@@ -53,6 +53,13 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
         parent::__construct($value);
     }
 
+    /**
+     * @return AmfStream
+     */
+    public function getPure()
+    {
+        return new AmfStream($this->_raw);
+    }
 
     /**
      * @param AmfStream $data
@@ -69,7 +76,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      */
     public function reload()
     {
-        self::$id = $this->data()->generateId()->getId();
+        self::$id = $this->read()->generateId()->getId();
 
         return $this;
     }
@@ -142,10 +149,27 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @param int $message_position
      * @return Read
      */
-    public function data($data_position = 0, $message_position = 0)
+    public function read($data_position = 0, $message_position = 0)
     {
         return new  Read($this->_obj, $message_position, $data_position);
     }
 
+    /**
+     * @return string
+     */
+    public function getStream()
+    {
+        $parser = new AmfSerialize;
 
+        return $this->_raw = $parser->encode($this->_obj);
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getLength()
+    {
+        return strlen($this->_raw);
+    }
 }

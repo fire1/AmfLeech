@@ -205,6 +205,9 @@ class SendRequest
             CURLOPT_SSL_VERIFYPEER => true,
         ));
 
+//        echo "Container : \n";
+//        var_dump($this->_container->getStream());
+//        echo "\n\n";
         $content = curl_exec($this->_curl_handler);
         curl_close($this->_curl_handler);
 
@@ -264,6 +267,11 @@ class SendRequest
     public function getResponse()
     {
         return is_null($this->reply) ? $this->reply = $this->__curl() : $this->reply;
+    }
+
+    public function execute()
+    {
+        $this->getResponse();
     }
 
     /**
