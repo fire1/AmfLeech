@@ -54,7 +54,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     }
 
     /**
-     * @return AmfStream
+     * @inheritdoc
      */
     public function getPure()
     {

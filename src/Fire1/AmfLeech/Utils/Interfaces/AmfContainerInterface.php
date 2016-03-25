@@ -24,24 +24,29 @@ interface AmfContainerInterface
      */
     public function reload();
 
-    /**
+    /** Sets AMF from binary encoded stream
      * @param AmfStream $data
      * @return void
      */
     public function setEncoded(AmfStream $data);
 
-    /**
+    /** Sets AMF from object stream
      * @param AmfPacket $data
      * @return void
      */
     public function setDecoded(AmfPacket $data);
 
-    /**
-     * @return mixed
+    /** Gets pure content of AMF dump file
+     * @return AmfStream
+     */
+    public function getPure();
+
+    /** Gets reloaded then encoded AMF dump
+     * @return string
      */
     public function getEncoded();
 
-    /** Sets data to AMF object
+    /** Gets decoded AMF object from AMF dump
      * @return mixed
      */
     public function getDecoded();

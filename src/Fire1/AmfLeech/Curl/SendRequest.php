@@ -205,61 +205,13 @@ class SendRequest
             CURLOPT_SSL_VERIFYPEER => true,
         ));
 
-//        echo "Container : \n";
-//        var_dump($this->_container->getStream());
-//        echo "\n\n";
         $content = curl_exec($this->_curl_handler);
         curl_close($this->_curl_handler);
 
         return $content;
     }
 
-    private function __gets()
-    {
-        $opts = array(
-            'http'   => array(
-                'method'  => 'POST',
-                'header'  => $this->getHead(),
-                'content' => $this->_container->getStream(),
-            ), 'ssl' => array(
-                // set some SSL/TLS specific options
-                'verify_peer'       => false,
-                'verify_peer_name'  => false,
-                'allow_self_signed' => true,
-            ),
 
-        );
-
-        $context = stream_context_create($opts);
-
-//        $content = file_get_contents(self::$endpoint, false, $context);
-        $fp = fopen(self::$endpoint, 'rb', false, $context);
-        $response = stream_get_contents($fp);
-        echo var_dump($response);
-        exit;
-
-        return $response;
-    }
-
-
-    private function __fopen()
-    {
-        $params = array('http' => array(
-            'method'  => 'POST',
-            'content' => $this->_container->getStream(),
-        ));
-
-        $ctx = stream_context_create($params);
-        $fp = @fopen($sUrl, 'rb', false, $ctx);
-        if (!$fp) {
-            throw new \Exception("Problem with $sUrl, $php_errormsg");
-        }
-
-        $response = @stream_get_contents($fp);
-        if ($response === false) {
-            throw new \Exception("Problem reading data from $sUrl, $php_errormsg");
-        }
-    }
 
     /**
      * @return mixed
