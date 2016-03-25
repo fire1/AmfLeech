@@ -109,7 +109,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     }
 
     /**
-     * @return mixed
+     * @return AmfStream
      */
     public function getEncoded()
     {

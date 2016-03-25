@@ -42,7 +42,7 @@ interface AmfContainerInterface
     public function getPure();
 
     /** Gets reloaded then encoded AMF dump
-     * @return string
+     * @return AmfStream
      */
     public function getEncoded();
 
