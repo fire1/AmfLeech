@@ -19,6 +19,9 @@ use Fire1\AmfLeech\Utils\AmfContainer;
  */
 interface AmfContainerInterface
 {
+
+
+
     /** Reloads AMF data
      * @return AmfContainer
      */

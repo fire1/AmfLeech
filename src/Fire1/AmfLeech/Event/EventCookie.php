@@ -24,6 +24,15 @@ class EventCookie
     const STR_COOKIE = 'JSESSIONID=';
 
     /**
+     * Defines object explicit string name for error
+     */
+    const ERROR_EXPLICIT_NAME = "_explicitType";
+    /**
+     * Defines explicit type value to trigger error
+     */
+    const ERROR_EXPLICIT_TYPE = "flex.messaging.messages.ErrorMessage";
+
+    /**
      * @param Read $read
      */
     public function __construct(Read $read)
