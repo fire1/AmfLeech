@@ -34,7 +34,7 @@ class Read
      * @param int $msg_position
      * @param int $data_position
      */
-    public function __construct($messages, $msg_position = 0, $data_position = 0)
+    public function __construct(&$messages, $msg_position = 0, $data_position = 0)
     {
 
         $message = $messages->messages[ $msg_position ];
@@ -112,6 +112,43 @@ class Read
                 return null;
 
         endswitch;
+    }
+
+    /**
+     * Gets Body object from AMF message
+     * @param int $index
+     * @return object|null
+     */
+    public function getBody($index = 0)
+    {
+        switch (true):
+            case is_array($this->getData()->body) && $index > 0:
+                return $this->getData()->body[ $index ];
+            case is_array($this->getData()->body) && $index == 0:
+                return current($this->getData()->body);
+            case is_object($this->getData()->body):
+                return $this->getData()->body;
+            default:
+                return null;
+        endswitch;
+    }
+
+    /**
+     * @param $name
+     */
+    public function __get($name)
+    {
+        return $this->getBody()->{$name};
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     */
+    public function __set($name, $value)
+    {
+        return $this->getBody()->{$name} = $value;
     }
 
     /**

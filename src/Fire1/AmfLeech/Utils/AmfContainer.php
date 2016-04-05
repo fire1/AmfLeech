@@ -114,7 +114,6 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     public function getEncoded()
     {
         $this->compile();
-
         return new AmfStream($this->_raw);
     }
 
@@ -137,7 +136,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
 
     /**
      * @param $name
-     * @return mixed
+     * @return object
      */
     public function __get($name)
     {
