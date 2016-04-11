@@ -16,7 +16,7 @@ Required PHP5.4+  & PHP libraries:
 
 * Symfony / Class-loader
 * Symfony / Finder
-* SilexLams / amfphp
+* SilexLabs / amfphp
 
 
 Or just use [composer.phar](https://getcomposer.org/) 
