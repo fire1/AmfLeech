@@ -128,7 +128,9 @@ class Read
                 return current($this->getData()->body);
             case is_object($this->getData()->body):
                 return $this->getData()->body;
+
             default:
+            case is_null($this->getData()->body):
                 return null;
         endswitch;
     }
