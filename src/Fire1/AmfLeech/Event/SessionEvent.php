@@ -31,10 +31,10 @@ class SessionEvent
      * Defines explicit type values that trigger error
      * @type array
      */
-    static $EXPLICIT_CONTAINER = [
+    static $EXPLICIT_CONTAINER = array(
         "flex.messaging.messages.ErrorMessage",
         "flex.messaging.messages.AcknowledgeMessage",
-    ];
+    );
 
     /**
      * SessionEvent constructor that defines session to the server.
