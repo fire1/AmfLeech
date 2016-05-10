@@ -37,13 +37,13 @@ class SessionEvent
     ];
 
     /**
-     * Defines session requests to the server
-     * @param Read   $read
-     * @param string $sessionId
+     * SessionEvent constructor that defines session to the server.
+     * @param Read $read
+     * @param bool $sessionId
      */
-    public function __construct( Read $read, $sessionId )
+    public function __construct( Read $read, $sessionId = false )
     {
-        if ($this->isModeratorErrorMessage($read))
+        if ($this->isModeratorErrorMessage($read) && $sessionId !== false)
             $this->setCookie($sessionId);
     }
 
