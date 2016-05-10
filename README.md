@@ -6,6 +6,7 @@ Leecher client for Adobe AMF3/Flex  protocol
   - AmfLeech can handle sequence  of files to reach right content
   - Supports user authentication
 
+[![Latest Stable Version](https://poser.pugx.org/fire1/amf-leech/v/stable)](https://packagist.org/packages/fire1/amf-leech) [![Total Downloads](https://poser.pugx.org/fire1/amf-leech/downloads)](https://packagist.org/packages/fire1/amf-leech) [![Latest Unstable Version](https://poser.pugx.org/fire1/amf-leech/v/unstable)](https://packagist.org/packages/fire1/amf-leech) [![License](https://poser.pugx.org/fire1/amf-leech/license)](https://packagist.org/packages/fire1/amf-leech)
 
 ### Version
 1.00
