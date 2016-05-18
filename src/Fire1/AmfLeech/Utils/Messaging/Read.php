@@ -8,6 +8,9 @@
 
 namespace Fire1\AmfLeech\Utils\Messaging;
 
+use Fire1\AmfLeech\Curl\SendRequest;
+
+
 /**
  * Class Read
  * @package Fire1\AmfLeech\Utils\Messaging
@@ -15,7 +18,7 @@ namespace Fire1\AmfLeech\Utils\Messaging;
 class Read
 {
 
-    public static $clintId = null;
+    public static $clientChanelId = null;
     /** External static configuration
      * @type bool
      */
@@ -27,32 +30,19 @@ class Read
     /**
      * @type \stdClass
      */
-    protected $header;
+//    protected $header;
 
     /**
      * @param     $messages
      * @param int $msg_position
      * @param int $data_position
      */
-    public function __construct(&$messages, $msg_position = 0, $data_position = 0)
+    public function __construct( &$messages, $msg_position = 0, $data_position = 0 )
     {
-
         $message = $messages->messages[ $msg_position ];
         $this->data = is_array($message->data) ? $message->data[ $data_position ] : $message->data;
 
-        !self::$change_msg_id ?: $this->generateId();
-
-        $this->listenClient();
-    }
-
-    protected function listenClient()
-    {
-        $client = $this->getClient();
-        if (is_null(self::$clintId) && !empty($client))
-            self::$clintId = $client;
-
-        if (!is_null(self::$clintId))
-            $this->setClient(self::$clintId);
+        !self::$change_msg_id ?: $this->generateIds();
     }
 
 
@@ -64,28 +54,24 @@ class Read
         return $this->data;
     }
 
-    /** Gets client ID
-     * @return string
-     */
-    public function getClient()
-    {
-        return $this->data->clientId;
-    }
 
-    /** Sets Client ID
-     * @param $value
+    /**
+     * Handle communication chanel with server
+     * @use SessionEvent
+     * @param     $value
+     * @param int $version
      */
-    public function setClient($value)
+    public function setHeaders( $value = null, $version = 1 )
     {
-        $this->data->clientId = $value;
+        $this->data->headers = new Head($value, $version);
     }
 
     /**
-     * @param $value
+     * @return null|object
      */
-    public function setMsgId($value)
+    public function getHeaders()
     {
-        $this->data->messageId = $value;
+        return ( isset( $this->data->headers ) ) ? $this->data->headers : null;
     }
 
     /** Gets message ID
@@ -93,23 +79,38 @@ class Read
      */
     public function getMsgId()
     {
-        return $this->getData()->messageId;
+        return $this->getMessageId();
     }
+
+    /**
+     * @return null|string
+     */
+    public function getMessageId()
+    {
+        switch (true):
+            case isset( $this->getData()->messageId ) :
+                return $this->getData()->messageId;
+            default:
+                return null;
+
+        endswitch;
+    }
+
 
     /**
      * @return string|null
      */
-    public function getId()
+    public function getChanelId()
     {
         switch (true):
-            case  isset($this->getData()->_externalizedData->DSId):
+            case  isset( $this->getData()->_externalizedData->DSId ):
                 return $this->getData()->_externalizedData->DSId;
 
-            case isset($this->getData()->messageId):
-                return $this->getData()->messageId;
+            case isset( $this->getData()->headers ) && isset( $this->getData()->headers->DSId ):
+                return $this->getData()->headers->DSId;
 
             default:
-                return null;
+                return SendRequest::$chanel;
 
         endswitch;
     }
@@ -119,7 +120,7 @@ class Read
      * @param int $index
      * @return object|null
      */
-    public function getBody($index = 0)
+    public function getBody( $index = 0 )
     {
         switch (true):
             case is_array($this->getData()->body) && $index > 0:
@@ -138,7 +139,7 @@ class Read
     /**
      * @param $name
      */
-    public function __get($name)
+    public function __get( $name )
     {
         return $this->getBody()->{$name};
     }
@@ -148,7 +149,7 @@ class Read
      * @param $value
      * @return mixed
      */
-    public function __set($name, $value)
+    public function __set( $name, $value )
     {
         return $this->getBody()->{$name} = $value;
     }
@@ -157,11 +158,28 @@ class Read
      *  Regenerate inner message ID
      * @return Read
      */
-    public function generateId()
+    public function generateIds()
     {
-        $this->setMsgId(Flex::generateRandomId());
+        !empty( SendRequest::$chanel ) ?:
+            self::$clientChanelId = SendRequest::$chanel = $this->getRandomId();
 
+        $this->setHeaders();
+        $this->getData()->messageId = $this->getRandomId();
         return $this;
+    }
+
+    /**
+     * Generate random ID
+     * @return string
+     */
+    public function getRandomId()
+    {
+        // version 4 UUID
+        return sprintf(
+            '%08X-%04X-%04X-%02X%02X-%012X', mt_rand(), mt_rand(0, 65535), bindec(substr_replace(
+                sprintf('%016b', mt_rand(0, 65535)), '0100', 11, 4)
+        ), bindec(substr_replace(sprintf('%08b', mt_rand(0, 255)), '01', 5, 2)), mt_rand(0, 255), mt_rand()
+        );
     }
 
 }

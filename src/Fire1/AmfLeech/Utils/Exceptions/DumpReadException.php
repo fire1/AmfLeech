@@ -8,6 +8,10 @@
  */
 namespace Fire1\AmfLeech\Utils\Exceptions;
 
+/**
+ * Class DumpReadException
+ * @package Fire1\AmfLeech\Utils\Exceptions
+ */
 class DumpReadException extends \Exception
 {
 

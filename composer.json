@@ -1,6 +1,6 @@
 {
-  "name": "fire1/amf-leech",
   "description": "Amf3 library",
+  "name": "fire1/amf-leech",
   "minimum-stability": "dev",
   "license": "MIT",
   "authors": [

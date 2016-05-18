@@ -13,6 +13,7 @@ use Fire1\AmfLeech\Core\AmfStream;
 use Fire1\AmfLeech\Core\AmfPacket;
 use Fire1\AmfLeech\Core\AmfSerialize;
 use Fire1\AmfLeech\Core\AmfDeserialize;
+use Fire1\AmfLeech\Curl\SendRequest;
 use Fire1\AmfLeech\Utils\Interfaces\AmfContainerInterface;
 use Fire1\AmfLeech\Utils\Messaging\Read;
 
@@ -23,7 +24,8 @@ use Fire1\AmfLeech\Utils\Messaging\Read;
 class AmfContainer extends AmfStream implements AmfContainerInterface
 {
 
-    /** Container ID
+    /**
+     * chanel ID
      * @type string
      */
     public static $id;
@@ -41,7 +43,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @param string $value
      * @throws \Fire1\AmfLeech\Core\Exceptions\AmfException
      */
-    public function __construct($value = null)
+    public function __construct( $value = null )
     {
         if (is_null($value))
             return;
@@ -49,6 +51,9 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
         $parser = new AmfDeserialize;
         $this->_raw = $value;
         $this->_obj = $parser->decode($value);
+
+        if (!empty( SendRequest::$chanel ) && self::$id != SendRequest::$chanel)
+            self::$id = SendRequest::$chanel;
 
         parent::__construct($value);
     }
@@ -64,7 +69,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     /**
      * @param AmfStream $data
      */
-    public function setEncoded(AmfStream $data)
+    public function setEncoded( AmfStream $data )
     {
         $parser = new AmfDeserialize;
         $this->_raw = $data;
@@ -76,15 +81,14 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      */
     public function reload()
     {
-        self::$id = $this->read()->generateId()->getId();
-
+        $this->read()->generateIds();
         return $this;
     }
 
     /**
      * @param AmfPacket $data
      */
-    public function setDecoded(AmfPacket $data)
+    public function setDecoded( AmfPacket $data )
     {
         $parser = new AmfSerialize;
         $this->_obj = $data;
@@ -99,7 +103,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @return AmfContainer
      * @throws \Fire1\AmfLeech\Core\Exceptions\AmfException
      */
-    public function compile($new = false)
+    public function compile( $new = false )
     {
         $parser = new AmfSerialize;
         $this->_raw = $parser->encode($this->_obj);
@@ -113,7 +117,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      */
     public function getEncoded()
     {
-        $this->compile();
+        $this->reload()->compile();
         return new AmfStream($this->_raw);
     }
 
@@ -129,7 +133,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @param $name
      * @param $value
      */
-    public function __set($name, $value)
+    public function __set( $name, $value )
     {
         $this->_obj->{$name} = $value;
     }
@@ -138,7 +142,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @param $name
      * @return object
      */
-    public function __get($name)
+    public function __get( $name )
     {
         return $this->_obj->{$name};
     }
@@ -148,23 +152,24 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
      * @param int $message_position
      * @return Read
      */
-    public function read($data_position = 0, $message_position = 0)
+    public function read( $data_position = 0, $message_position = 0 )
     {
         return new  Read($this->_obj, $message_position, $data_position);
     }
 
     /**
+     * Pass data to SendRequest
      * @return string
      */
     public function getStream()
     {
         $parser = new AmfSerialize;
-
         return $this->_raw = $parser->encode($this->_obj);
     }
 
 
     /**
+     * Pass data to SendRequest
      * @return int
      */
     public function getLength()

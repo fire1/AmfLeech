@@ -22,125 +22,57 @@
 * @author angel zaprianov <me@fire1.eu>
 */
 
+use \Fire1\AmfLeech\Curl\SendRequest;
+use \Fire1\AmfLeech\Utils;
 
 include "bootstrap.php";
 
 error_reporting(E_ALL);
 
+//
+// Load dumped files
+$rd = new Utils\DumpReader(__DIR__ . '/AmfDumps/mandator/');
+$op = (new Utils\DumpPacket($rd))->expandAll();
 
-$rd = new \Fire1\AmfLeech\Utils\DumpReader(__DIR__ . '/amf-collection/');
-$op = (new \Fire1\AmfLeech\Utils\DumpPacket($rd))->expandAll();
-
-
+//
+// Gets container array with amf dumps
 $arrAmf = $op->getArrContainer();
 
-\Fire1\AmfLeech\Curl\SendRequest::$referer = "https://www.klingelmedianet.de/client/ISY3Suite_frontend.swf";
-\Fire1\AmfLeech\Curl\SendRequest::$endpoint = "https://www.klingelmedianet.de/client/messagebroker/amf/";
+//
+// Configure Client request sender
+SendRequest::$referer = "your-server.test/client";
+SendRequest::$endpoint = "[your-server.test/message/broker/amf]";
 
 
-//echo "<pre>";
-///* @var \Fire1\AmfLeech\Utils\AmfContainer $amf */
-//foreach ($container as $index => $amf):
+
+
+echo "<div style='width: 1020px;margin: auto;'> <pre>";
+
 //
-//
-//    echo "------------------------------------- {$index} -------------------------------------\n";
-//    print_r((new \Fire1\AmfLeech\Core\AmfDeserialize())->decode($cli->getResponse()));
-//endforeach;
-//exit;
-echo "<pre>";
-/* @var \Fire1\AmfLeech\Utils\AmfContainer $amf */
+// Loop array container and trigger requests to the server
 foreach ($arrAmf as $index => $amf) :
-    $amf->read();
-    $amf->reload();
-    $amf->compile();
-    $cli = new \Fire1\AmfLeech\Curl\SendRequest($amf->getEncoded());
-    $data = $cli->getReply()->read();
-    echo " ---------------------- Index   ==========  <b> {$index} </b> \n \n";
+    /* @var \Fire1\AmfLeech\Utils\AmfContainer $amf */
+    if ($amf instanceof \Fire1\AmfLeech\Core\Interfaces\AmfStreamInterface) {
+        echo "<div style='clear: both;display: block'>";
+
+        //
+        // Read request from server
+        echo "<div style='padding:15px;width: 465px;display: inline-block;float: left;background: #c2face'> <h2> Request <b> {$index} </b> </h2>\n \n";
+        var_dump($amf->read());
+        echo '</div>';
+
+        // Send request to  server
+        $cli = (new SendRequest($amf->getEncoded()))->getReply();
+
+        //
+        // Read response from server
+        echo " <div style='padding:15px;width:465px;display: inline-block;float: left;background: #faa29f;margin-left: 5px'> <h2> Response <b> {$index} </b> </h2> \n \n";
+
+        var_dump($cli->read(), 'cookie:' . SendRequest::$cookie);
 
 
-    var_dump($data->getData());
-    echo "  \r\n\r\n";
+        echo " </div> </div><div style='clear: both;display: block'></div> \n\r\n";
+    } else continue;
 endforeach;
 
-exit;
-
-
-/* @var \Fire1\AmfLeech\Utils\AmfContainer $request_1 */
-$request_1 = $amf[0];
-$request_1->reload();
-$request_1->compile();
-
-echo "------------------------ AMF BIN 1 ------------------------" . "\n";
-//var_dump($request_1->read());
-
-$cli = new \Fire1\AmfLeech\Curl\SendRequest($request_1->getEncoded());
-
-/* @var \Fire1\AmfLeech\Utils\AmfContainer $response */
-$response_1 = $cli->getReply();
-
-//$reply = new \Fire1\AmfLeech\Utils\Reply($cli->getReply()->getDecoded());
-
-echo "------------------------ Client ------------------------" . "\n";
-$client_id = $response_1->read()->getClient();
-var_dump($client_id);
-exit;
-/* @var \Fire1\AmfLeech\Utils\AmfContainer $request_2 */
-$request_2 = $amf[8];
-$request_2->read()->setClient($client_id);
-$request_2->compile();
-
-echo "------------------------ AMF BIN 2 ------------------------" . "\n";
-var_dump($request_2->getEncoded());
-
-$cli = new \Fire1\AmfLeech\Curl\SendRequest($request_2->getEncoded());
-
-$response_2 = $cli->getReply();
-
-echo "------------------------ Login ------------------------" . "\n";
-
-var_dump($response_2->read());
-
-
-exit;
-//if (isset($response->messages[0]->data->_externalizedData->DSId)) {
-//    $signature = $response->messages[0]->data->_externalizedData->DSId;
-//}
-//
-//
-//$cli = new \Fire1\AmfLeech\Curl\SendRequest($amf[1]->getEncoded());
-/* @var \Fire1\AmfLeech\Core\AmfPacket $req_1 */
-$req_1 = $amf[1]->getDecoded();
-$req_1->messages[0];
-
-
-echo '<pre>';
-var_dump($amf[1]->getDecoded());
-//$i = $_get['i'];
-//$stream_amf3 = file_get_contents(__dir__ . "/amf-bin/amf{$i}.bin");
-
-
-//$result = (new fire1\Amfleech\Core\Amfdeserialize)->decode($rd->readindex(3));
-
-
-
-
-
-
-
-
-echo "<pre>";
-/* @var \Fire1\AmfLeech\Utils\AmfContainer $amf */
-foreach ($arrAmf as $index => $amf) :
-    $amf->read();
-    $amf->reload();
-    $amf->compile();
-    $cli = new \Fire1\AmfLeech\Curl\SendRequest($amf->getEncoded());
-    $data = $cli->getReply()->read();
-    echo " <b>Index</b> reading ...  <b> {$index} </b> \n \n";
-    var_dump($data->getData());
-
-    echo "  \r\n\r\n";
-
-    echo "  \r\n\r\n";
-endforeach;
-//var_dump($result);
+echo( "</pre> <hr /><h3>Ending! </h3> \n </div>" );

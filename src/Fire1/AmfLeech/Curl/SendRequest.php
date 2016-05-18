@@ -69,6 +69,11 @@ class SendRequest
     /**
      * @type null|string
      */
+    public static $chanel = null;
+
+    /**
+     * @type null|string
+     */
     public static $endpoint = null;
 
     /** cURL session
@@ -95,7 +100,7 @@ class SendRequest
      * @param null|string        $endpoint URL address of AMF gateway
      * @param null|string        $cookie   Cookie if is created
      */
-    function __construct(AmfStreamInterface $stream, $endpoint = null, $cookie = null)
+    function __construct( AmfStreamInterface $stream, $endpoint = null, $cookie = null )
     {
         $this->_container = $stream;
 
@@ -108,15 +113,15 @@ class SendRequest
     /** Remove header element from given index
      * @param $index
      */
-    public function unsetHeaderIndex($index)
+    public function unsetHeaderIndex( $index )
     {
-        unset($this->_header[ $index ]);
+        unset( $this->_header[ $index ] );
     }
 
     /** Sets additional header value
      * @param array|string $value
      */
-    public function setHeader($value)
+    public function setHeader( $value )
     {
         if (is_array($value)) {
             array_merge_recursive($this->_header, $value);
@@ -135,8 +140,8 @@ class SendRequest
 
         $url_parts = parse_url(self::$endpoint);
 
-        $this->domain = $url_parts['host'];
-        $this->address = $url_parts['scheme'] . '://' . $url_parts['host'];
+        $this->domain = $url_parts[ 'host' ];
+        $this->address = $url_parts[ 'scheme' ] . '://' . $url_parts[ 'host' ];
 
 
     }
@@ -147,7 +152,7 @@ class SendRequest
     public function getHeaderDynamicData()
     {
         return array(
-            "Referer: " . !is_null(self::$referer) ? self::$referer : $this->address . '/backdoor.swf',
+            "Referer: " . !empty( self::$referer ) ? self::$referer : $this->address . '/backdoor.swf',
             "Cookie: " . $this->getCookie(),
             "Host: " . $this->domain,
             "Content-Length: " . $this->_container->getLength(),
@@ -155,8 +160,10 @@ class SendRequest
         );
     }
 
-    /** Creates new cookie from
-     * @return mixed
+    /**
+     * Creates communication cookie
+     * @return string
+     * @throws RequestException
      */
     protected function requestCookie()
     {
@@ -164,9 +171,14 @@ class SendRequest
         $ch = curl_init(self::$endpoint);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         preg_match('/^Set-Cookie: (.*?);/m', curl_exec($ch), $arrMatch);
 
-        return $arrMatch[1];
+        if (isset( $arrMatch[ 1 ] )) {
+            return $arrMatch[ 1 ];
+        }
+        throw new RequestException(sprintf("Cannot manage to create cookie in given URL %s !", self::$endpoint));
     }
 
     /** Returns cookie string from server
@@ -201,8 +213,10 @@ class SendRequest
             CURLOPT_BINARYTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
+            //
+            // Skip SSL verification
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
         ));
 
         $content = curl_exec($this->_curl_handler);
@@ -210,7 +224,6 @@ class SendRequest
 
         return $content;
     }
-
 
 
     /**
@@ -237,7 +250,7 @@ class SendRequest
     /**
      * @param callable $callback
      */
-    public function exe(callable $callback)
+    public function exe( callable $callback )
     {
         return $callback($this->getResponse());
     }

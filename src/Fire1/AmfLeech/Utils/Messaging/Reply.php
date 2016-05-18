@@ -10,7 +10,7 @@ namespace Fire1\AmfLeech\Utils;
 
 use Fire1\AmfLeech\Core\AmfPacket;
 
-/**
+/**@deprecated 
  * Class Reply
  * @package Fire1\AmfLeech\Utils
  */
