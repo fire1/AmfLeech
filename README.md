@@ -29,13 +29,8 @@ Want to contribute? Great!
 
 ### How to use
 
-Check */tests/read.php* file for example.
+Check `/tests/read.php` file for example.
 
-
-### Todos
-
- - Write Tests
- - Finish the project
 
 License
 ----
