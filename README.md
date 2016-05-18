@@ -27,6 +27,10 @@ Or just use [composer.phar](https://getcomposer.org/)
 
 Want to contribute? Great!
 
+### How to use
+
+Check */tests/read.php* file for example.
+
 
 ### Todos
 
