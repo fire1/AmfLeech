@@ -186,7 +186,7 @@ class SendRequest
      */
     public function getCookie()
     {
-        return is_null(self::$cookie) ? self::$cookie = $this->requestCookie() : self::$cookie;
+        return empty(self::$cookie) ? self::$cookie = $this->requestCookie() : self::$cookie;
     }
 
     /** Gets

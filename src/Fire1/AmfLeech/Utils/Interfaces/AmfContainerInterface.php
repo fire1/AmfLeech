@@ -21,7 +21,6 @@ interface AmfContainerInterface
 {
 
 
-
     /** Reloads AMF data
      * @return AmfContainer
      */
@@ -31,13 +30,13 @@ interface AmfContainerInterface
      * @param AmfStream $data
      * @return void
      */
-    public function setEncoded(AmfStream $data);
+    public function setEncoded( AmfStream $data );
 
     /** Sets AMF from object stream
      * @param AmfPacket $data
      * @return void
      */
-    public function setDecoded(AmfPacket $data);
+    public function setDecoded( AmfPacket $data );
 
     /** Gets pure content of AMF dump file
      * @return AmfStream
@@ -60,16 +59,27 @@ interface AmfContainerInterface
     public function compile();
 
     /**
+     * Checks message is error
+     * @return bool
+     */
+    public function isAccepted();
+
+    /** Gets message type
+     * @return mixed
+     */
+    public function getMsqType();
+
+    /**
      * @param string $name
      * @param mixed  $value
      * @return void
      */
-    public function __set($name, $value);
+    public function __set( $name, $value );
 
     /** Gets data from AMF object
      * @param string $name
      * @return mixed
      */
-    public function __get($name);
+    public function __get( $name );
 
 }

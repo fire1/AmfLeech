@@ -13,7 +13,7 @@ use Fire1\AmfLeech\Core\AmfStream;
 use Fire1\AmfLeech\Core\AmfPacket;
 use Fire1\AmfLeech\Core\AmfSerialize;
 use Fire1\AmfLeech\Core\AmfDeserialize;
-use Fire1\AmfLeech\Curl\SendRequest;
+use Fire1\AmfLeech\Core\Interfaces\AmfStreamInterface;
 use Fire1\AmfLeech\Utils\Interfaces\AmfContainerInterface;
 use Fire1\AmfLeech\Utils\Messaging\Read;
 
@@ -21,14 +21,48 @@ use Fire1\AmfLeech\Utils\Messaging\Read;
  * Class AmfContainer
  * @package Fire1\AmfLeech\Utils
  */
-class AmfContainer extends AmfStream implements AmfContainerInterface
+class AmfContainer implements AmfContainerInterface, AmfStreamInterface
 {
+    /**
+     * Defines object explicit string name for error
+     */
+    public static $STRING_EXPLICIT_NAME = "_explicitType";
 
     /**
-     * chanel ID
-     * @type string
+     * Defines explicit type values that trigger error
+     * @type array
      */
-    public static $id;
+    public static $ERROR_EXPLICIT_CONTAINER = array(
+        0 => "flex.messaging.messages.ErrorMessage",
+    );
+
+    /**
+     * Defines explicit type values for accepted message
+     * @type array
+     */
+    public static $ACCEPT_EXPLICIT_CONTAINER = array(
+        1 => "flex.messaging.messages.RemotingMessage",
+        2 => "flex.messaging.messages.CommandMessage",
+        3 => "flex.messaging.messages.AcknowledgeMessage",
+    );
+
+    /**
+     * Defines Error message
+     */
+    const MSQ_TYPE_ERR = 0;
+    /**
+     * Defines Acknowledge message
+     */
+    const MSG_TYPE_ACK = 1;
+    /**
+     * Defines Command message
+     */
+    const MSG_TYPE_COM = 2;
+    /**
+     * Defines Remoting message
+     */
+    const MSG_TYPE_REM = 3;
+
     /**
      * @type AmfStream
      */
@@ -52,10 +86,6 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
         $this->_raw = $value;
         $this->_obj = $parser->decode($value);
 
-        if (!empty( SendRequest::$chanel ) && self::$id != SendRequest::$chanel)
-            self::$id = SendRequest::$chanel;
-
-        parent::__construct($value);
     }
 
     /**
@@ -92,7 +122,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     {
         $parser = new AmfSerialize;
         $this->_obj = $data;
-        $this->_raw = $parser->encode($data);
+        $this->_raw = $parser->encode($this->_obj);
     }
 
     /** Complied new message
@@ -107,8 +137,6 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     {
         $parser = new AmfSerialize;
         $this->_raw = $parser->encode($this->_obj);
-        parent::__construct($this->_raw);
-
         return $this;
     }
 
@@ -148,6 +176,7 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     }
 
     /**
+     * Gets object with helper methods
      * @param int $data_position
      * @param int $message_position
      * @return Read
@@ -158,13 +187,31 @@ class AmfContainer extends AmfStream implements AmfContainerInterface
     }
 
     /**
+     * Checks message is error
+     * @return bool
+     */
+    public function isAccepted()
+    {
+        in_array($this->read()->getData()->{self::$STRING_EXPLICIT_NAME}, self::$ERROR_EXPLICIT_CONTAINER) ?
+            false : true;
+    }
+
+    /** Gets message type
+     * @return mixed
+     */
+    public function getMsqType()
+    {
+        $arrTypeContainer = array_merge(self::$ERROR_EXPLICIT_CONTAINER, self::$ACCEPT_EXPLICIT_CONTAINER);
+        return array_search($this->read()->getData()->{self::$STRING_EXPLICIT_NAME}, $arrTypeContainer);
+    }
+
+    /**
      * Pass data to SendRequest
      * @return string
      */
     public function getStream()
     {
-        $parser = new AmfSerialize;
-        return $this->_raw = $parser->encode($this->_obj);
+        return $this->_raw = (new AmfSerialize)->encode($this->_obj);
     }
 
 
