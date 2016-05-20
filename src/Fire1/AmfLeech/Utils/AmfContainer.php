@@ -28,45 +28,7 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
      * @type bool
      */
     public static $enableIdReloads = true;
-    /**
-     * Defines object explicit string name for error
-     */
-    public static $STRING_EXPLICIT_NAME = "_explicitType";
 
-    /**
-     * Defines explicit type values that trigger error
-     * @type array
-     */
-    public static $ERROR_EXPLICIT_CONTAINER = array(
-        0 => "flex.messaging.messages.ErrorMessage",
-    );
-
-    /**
-     * Defines explicit type values for accepted message
-     * @type array
-     */
-    public static $ACCEPT_EXPLICIT_CONTAINER = array(
-        1 => "flex.messaging.messages.RemotingMessage",
-        2 => "flex.messaging.messages.CommandMessage",
-        3 => "flex.messaging.messages.AcknowledgeMessage",
-    );
-
-    /**
-     * Defines Error message
-     */
-    const MSQ_TYPE_ERR = 0;
-    /**
-     * Defines Acknowledge message
-     */
-    const MSG_TYPE_ACK = 1;
-    /**
-     * Defines Command message
-     */
-    const MSG_TYPE_COM = 2;
-    /**
-     * Defines Remoting message
-     */
-    const MSG_TYPE_REM = 3;
 
     /**
      * @type AmfStream
@@ -99,7 +61,7 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
     public function getPure( $dumpedChannelId = null )
     {
         return is_null($dumpedChannelId) ?
-            new AmfStream($this->_raw) : str_replace($dumpedChannelId, SendRequest::$chanel, $this->_raw);
+            new AmfStream($this->_raw) : new AmfStream(str_replace($dumpedChannelId, SendRequest::$chanel, $this->_raw));
     }
 
     /**
@@ -199,25 +161,6 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
     public function read( $data_position = 0, $message_position = 0 )
     {
         return new  Read($this->_obj, $message_position, $data_position);
-    }
-
-    /**
-     * Checks message is error
-     * @return bool
-     */
-    public function isAccepted()
-    {
-        in_array($this->read()->getData()->{self::$STRING_EXPLICIT_NAME}, self::$ERROR_EXPLICIT_CONTAINER) ?
-            false : true;
-    }
-
-    /** Gets message type
-     * @return mixed
-     */
-    public function getMsqType()
-    {
-        $arrTypeContainer = array_merge(self::$ERROR_EXPLICIT_CONTAINER, self::$ACCEPT_EXPLICIT_CONTAINER);
-        return array_search($this->read()->getData()->{self::$STRING_EXPLICIT_NAME}, $arrTypeContainer);
     }
 
     /**

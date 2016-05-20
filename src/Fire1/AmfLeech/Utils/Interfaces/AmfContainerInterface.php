@@ -65,18 +65,6 @@ interface AmfContainerInterface
     public function compile();
 
     /**
-     * Checks message is error
-     * @return bool
-     */
-    public function isAccepted();
-
-    /**
-     * Gets message type
-     * @return mixed
-     */
-    public function getMsqType();
-
-    /**
      * @param string $name
      * @param mixed  $value
      * @return void

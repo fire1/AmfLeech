@@ -18,6 +18,49 @@ use Fire1\AmfLeech\Curl\SendRequest;
 class Read
 {
 
+    /**
+     * Defines object explicit string name for error
+     */
+    public static $STRING_EXPLICIT_NAME = "_explicitType";
+
+    /**
+     * Defines explicit type values that trigger error
+     * @type array
+     */
+    public static $ERROR_EXPLICIT_CONTAINER = array(
+        0 => "flex.messaging.messages.ErrorMessage",
+    );
+
+    /**
+     * Defines explicit type values for accepted message
+     * @type array
+     */
+    public static $ACCEPT_EXPLICIT_CONTAINER = array(
+        1 => "flex.messaging.messages.RemotingMessage",
+        2 => "flex.messaging.messages.CommandMessage",
+        3 => "flex.messaging.messages.AcknowledgeMessage",
+    );
+
+    /**
+     * Defines Error message
+     */
+    const MSQ_TYPE_ERR = 0;
+    /**
+     * Defines Acknowledge message
+     */
+    const MSG_TYPE_ACK = 1;
+    /**
+     * Defines Command message
+     */
+    const MSG_TYPE_COM = 2;
+    /**
+     * Defines Remoting message
+     */
+    const MSG_TYPE_REM = 3;
+
+    /**
+     * @type null
+     */
     public static $clientChanelId = null;
     /** External static configuration
      * @type bool
@@ -180,6 +223,26 @@ class Read
                 sprintf('%016b', mt_rand(0, 65535)), '0100', 11, 4)
         ), bindec(substr_replace(sprintf('%08b', mt_rand(0, 255)), '01', 5, 2)), mt_rand(0, 255), mt_rand()
         );
+    }
+
+
+    /**
+     * Checks message is error
+     * @return bool
+     */
+    public function isAccepted()
+    {
+        return in_array($this->getData()->{self::$STRING_EXPLICIT_NAME}, self::$ERROR_EXPLICIT_CONTAINER) ?
+            false : true;
+    }
+
+    /** Gets message type
+     * @return mixed
+     */
+    public function getMsqType()
+    {
+        $arrTypeContainer = array_merge(self::$ERROR_EXPLICIT_CONTAINER, self::$ACCEPT_EXPLICIT_CONTAINER);
+        return array_search($this->getData()->{self::$STRING_EXPLICIT_NAME}, $arrTypeContainer);
     }
 
 }
