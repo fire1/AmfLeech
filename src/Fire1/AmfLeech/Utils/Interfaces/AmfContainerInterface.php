@@ -19,36 +19,42 @@ use Fire1\AmfLeech\Utils\AmfContainer;
  */
 interface AmfContainerInterface
 {
-
-
-    /** Reloads AMF data
+    /**
+     * Reloads AMF data
      * @return AmfContainer
      */
     public function reload();
 
-    /** Sets AMF from binary encoded stream
+    /**
+     * Sets AMF from binary encoded stream
      * @param AmfStream $data
      * @return void
      */
     public function setEncoded( AmfStream $data );
 
-    /** Sets AMF from object stream
+    /**
+     * Sets AMF from object stream
      * @param AmfPacket $data
      * @return void
      */
     public function setDecoded( AmfPacket $data );
 
-    /** Gets pure content of AMF dump file
+    /**
+     * Gets pure content of AMF dump file.
+     * If is set param $dumpedChannelId method will replace given Id with $chanel
+     * @param null $dumpedChannelId
      * @return AmfStream
      */
-    public function getPure();
+    public function getPure( $dumpedChannelId = null );
 
-    /** Gets reloaded then encoded AMF dump
+    /**
+     * Gets reloaded then encoded AMF dump
      * @return AmfStream
      */
     public function getEncoded();
 
-    /** Gets decoded AMF object from AMF dump
+    /**
+     * Gets decoded AMF object from AMF dump
      * @return mixed
      */
     public function getDecoded();
@@ -64,7 +70,8 @@ interface AmfContainerInterface
      */
     public function isAccepted();
 
-    /** Gets message type
+    /**
+     * Gets message type
      * @return mixed
      */
     public function getMsqType();

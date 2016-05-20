@@ -14,6 +14,7 @@ use Fire1\AmfLeech\Core\AmfPacket;
 use Fire1\AmfLeech\Core\AmfSerialize;
 use Fire1\AmfLeech\Core\AmfDeserialize;
 use Fire1\AmfLeech\Core\Interfaces\AmfStreamInterface;
+use Fire1\AmfLeech\Curl\SendRequest;
 use Fire1\AmfLeech\Utils\Interfaces\AmfContainerInterface;
 use Fire1\AmfLeech\Utils\Messaging\Read;
 
@@ -23,6 +24,10 @@ use Fire1\AmfLeech\Utils\Messaging\Read;
  */
 class AmfContainer implements AmfContainerInterface, AmfStreamInterface
 {
+    /**
+     * @type bool
+     */
+    public static $enableIdReloads = true;
     /**
      * Defines object explicit string name for error
      */
@@ -91,19 +96,23 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
     /**
      * @inheritdoc
      */
-    public function getPure()
+    public function getPure( $dumpedChannelId = null )
     {
-        return new AmfStream($this->_raw);
+        return is_null($dumpedChannelId) ?
+            new AmfStream($this->_raw) : str_replace($dumpedChannelId, SendRequest::$chanel, $this->_raw);
     }
 
     /**
+     * Fill AMF container
      * @param AmfStream $data
+     * @return $this
      */
     public function setEncoded( AmfStream $data )
     {
         $parser = new AmfDeserialize;
         $this->_raw = $data;
         $this->_obj = $parser->decode($data->getStream());
+        return $this;
     }
 
     /** Reloads AMF data
@@ -116,13 +125,16 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
     }
 
     /**
+     * Fill AMF container
      * @param AmfPacket $data
+     * @return $this
      */
     public function setDecoded( AmfPacket $data )
     {
         $parser = new AmfSerialize;
         $this->_obj = $data;
         $this->_raw = $parser->encode($this->_obj);
+        return $this;
     }
 
     /** Complied new message
@@ -145,7 +157,10 @@ class AmfContainer implements AmfContainerInterface, AmfStreamInterface
      */
     public function getEncoded()
     {
-        $this->reload()->compile();
+        if ((bool)static::$enableIdReloads) {
+            $this->reload();
+        }
+        $this->compile();
         return new AmfStream($this->_raw);
     }
 
