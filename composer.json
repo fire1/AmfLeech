@@ -1,7 +1,8 @@
 {
   "description": "Amf3 library",
   "name": "fire1/amf-leech",
-  "minimum-stability": "dev",
+  "minimum-stability": "RC",
+  "prefer-stable": true
   "license": "MIT",
   "authors": [
     {
@@ -15,8 +16,8 @@
     }
   },
   "require": {
-    "symfony/class-loader": "v2.x,v3.x",
-    "silexlabs/amfphp": "v2.2.2",
-    "symfony/finder": "v2.x,v3.x"
+    "symfony/class-loader": ">=2.* || 3.*",
+    "silexlabs/amfphp": "2.*",
+    "symfony/finder": ">=2.* || 3.*"
   }
 }
