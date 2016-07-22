@@ -2,7 +2,7 @@
   "description": "Amf3 library",
   "name": "fire1/amf-leech",
   "minimum-stability": "RC",
-  "prefer-stable": true
+  "prefer-stable": true,
   "license": "MIT",
   "authors": [
     {
