@@ -182,9 +182,11 @@ class Read
     /**
      * @param $name
      */
-    public function __get( $name )
+    public function &__get( $name )
     {
-        return $this->getBody()->{$name};
+        $body = $this->getBody();
+        $result = $body->{$name};
+        return $result;
     }
 
     /**
@@ -192,9 +194,12 @@ class Read
      * @param $value
      * @return mixed
      */
-    public function __set( $name, $value )
+    public function &__set( $name, $value )
     {
-        return $this->getBody()->{$name} = $value;
+        $body = $this->getBody();
+        $body->{$name} =& $value;
+        return $body;
+//        return $this->getBody()[$name] =& $value;
     }
 
     /**
