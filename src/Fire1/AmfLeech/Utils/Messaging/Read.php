@@ -184,8 +184,12 @@ class Read
      */
     public function &__get( $name )
     {
+        $result = "";
         $body = $this->getBody();
-        $result = $body->{$name};
+        if (isset( $body->{$name} )) {
+            $result = $body->{$name};
+            return $result;
+        }
         return $result;
     }
 
