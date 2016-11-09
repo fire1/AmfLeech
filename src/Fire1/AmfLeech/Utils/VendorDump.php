@@ -49,9 +49,13 @@ abstract class VendorDump
      */
     public function __construct()
     {
+        $parentClass = get_class($this);
+        //
+        // Change dump name pattern if constant is defined
+        $namePattern = defined($parentClass . '::DUMP_NAME_PATTERN') ? constant($parentClass . '::DUMP_NAME_PATTERN') : "amf*";
         //
         // Collect files and read them
-        $this->dumpPacket = (new DumpPacket($this->dumpReader = new DumpReader($this->getDumpFolder())))->expandAll();
+        $this->dumpPacket = ( new DumpPacket($this->dumpReader = new DumpReader($this->getDumpFolder(), $namePattern)) )->expandAll();
 
         //
         // Content collection of dump packet
