@@ -114,7 +114,7 @@ class Read
      */
     public function getHeaders()
     {
-        return ( isset( $this->data->headers ) ) ? $this->data->headers : null;
+        return ( isset($this->data->headers) ) ? $this->data->headers : null;
     }
 
     /** Gets message ID
@@ -131,7 +131,7 @@ class Read
     public function getMessageId()
     {
         switch (true):
-            case isset( $this->getData()->messageId ) :
+            case isset($this->getData()->messageId) :
                 return $this->getData()->messageId;
             default:
                 return null;
@@ -146,10 +146,10 @@ class Read
     public function getChanelId()
     {
         switch (true):
-            case  isset( $this->getData()->_externalizedData->DSId ):
+            case  isset($this->getData()->_externalizedData->DSId):
                 return $this->getData()->_externalizedData->DSId;
 
-            case isset( $this->getData()->headers ) && isset( $this->getData()->headers->DSId ):
+            case isset($this->getData()->headers) && isset($this->getData()->headers->DSId):
                 return $this->getData()->headers->DSId;
 
             default:
@@ -172,6 +172,8 @@ class Read
                 return current($this->getData()->body);
             case is_object($this->getData()->body):
                 return $this->getData()->body;
+            case is_numeric($this->getData()->body): // added in order to fix received index
+                return $this->getData()->body;
 
             default:
             case is_null($this->getData()->body):
@@ -186,7 +188,7 @@ class Read
     {
         $result = "";
         $body = $this->getBody();
-        if (isset( $body->{$name} )) {
+        if (isset($body->{$name})) {
             $result = $body->{$name};
             return $result;
         }
@@ -212,7 +214,7 @@ class Read
      */
     public function generateIds()
     {
-        !empty( SendRequest::$chanel ) ?:
+        !empty(SendRequest::$chanel) ?:
             self::$clientChanelId = SendRequest::$chanel = $this->getRandomId();
 
         $this->setHeaders();
