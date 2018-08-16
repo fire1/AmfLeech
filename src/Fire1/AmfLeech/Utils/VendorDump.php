@@ -81,7 +81,6 @@ abstract class VendorDump
         foreach ($this->dumpReader->getList() as $index => $fileInfo):
             if ($fileInfo->getBasename($suffix) != $name)
                 continue;
-
             return $this->repository[ $index ];
         endforeach;
         return null;
