@@ -73,7 +73,7 @@ abstract class VendorDump
      *      Default suffix is set to be ".bin" extension.
      * @param string $name
      * @param string $suffix
-     * @return AmfContainer|void
+     * @return AmfContainer|null
      */
     public function getFilename( $name, $suffix = ".bin" )
     {
@@ -81,6 +81,7 @@ abstract class VendorDump
         foreach ($this->dumpReader->getList() as $index => $fileInfo):
             if ($fileInfo->getBasename($suffix) != $name)
                 continue;
+
             return $this->repository[ $index ];
         endforeach;
         return null;
