@@ -73,7 +73,7 @@ abstract class VendorDump
      *      Default suffix is set to be ".bin" extension.
      * @param string $name
      * @param string $suffix
-     * @return AmfContainer|null
+     * @return AmfContainer|void
      */
     public function getFilename( $name, $suffix = ".bin" )
     {

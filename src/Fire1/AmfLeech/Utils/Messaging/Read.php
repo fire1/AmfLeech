@@ -166,12 +166,13 @@ class Read
     public function getBody( $index = 0 )
     {
         switch (true):
-            case is_object($this->getData()->body):
-                return $this->getData()->body;
             case is_array($this->getData()->body) && $index > 0:
                 return $this->getData()->body[ $index ];
             case is_array($this->getData()->body) && $index == 0:
                 return current($this->getData()->body);
+            case is_object($this->getData()->body):
+                return $this->getData()->body;
+
             default:
             case is_null($this->getData()->body):
                 return null;
