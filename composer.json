@@ -16,8 +16,8 @@
     }
   },
   "require": {
-    "symfony/class-loader": "^2.8 || ^3.0 || ^4.0",
+    "symfony/class-loader": "*",
     "silexlabs/amfphp": "v2.*",
-    "symfony/finder": "^2.8 || ^3.0 || ^4.0"
+    "symfony/finder": "*"
   }
 }

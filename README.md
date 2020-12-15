@@ -23,6 +23,9 @@ Required PHP5.4+  & PHP libraries:
 Or just use [composer.phar](https://getcomposer.org/) 
 
 
+`composer require fire1/amf-leech`
+
+
 ### Development
 
 Want to contribute? Great!
